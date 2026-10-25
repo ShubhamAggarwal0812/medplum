@@ -56,6 +56,15 @@ describe('ResourceCreatePage', () => {
     });
   });
 
+  test('Renders new ServiceRequest form page', async () => {
+    await setup('/ServiceRequest/new');
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Not found')).not.toBeInTheDocument();
+  });
+
   test('Form submit creates new Practitioner', async () => {
     const user = userEvent.setup();
     await setup('/Practitioner/new');
