@@ -1,31 +1,16 @@
 // SPDX-FileCopyrightText: Copyright Orangebot, Inc. and Medplum contributors
 // SPDX-License-Identifier: Apache-2.0
-import type { Questionnaire, QuestionnaireResponse } from '@medplum/fhirtypes';
-import { Document, QuestionnaireForm } from '@medplum/react';
-import { useState } from 'react';
+import type { Questionnaire } from '@medplum/fhirtypes';
 import type { JSX } from 'react';
+import { PatientQuestionnaireForm } from '../components/PatientQuestionnaireForm';
 
 export function PatientIntakeQuestionnairePage(): JSX.Element {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  async function handleQuestionnaireSubmit(_formData: QuestionnaireResponse): Promise<void> {
-    setIsSubmitted(true);
-    window.scrollTo(0, 0);
-  }
-
-  return (
-    <Document width={800}>
-      {isSubmitted ? (
-        <div>Thank you for submitting your form</div>
-      ) : (
-        <QuestionnaireForm questionnaire={questionnaire} onSubmit={handleQuestionnaireSubmit} />
-      )}
-    </Document>
-  );
+  return <PatientQuestionnaireForm questionnaire={questionnaire} />;
 }
 
 const questionnaire: Questionnaire = {
   resourceType: 'Questionnaire',
+  url: 'https://medplum.com/Questionnaire/foomedical-patient-intake',
   status: 'active',
   title: 'Patient Intake Questionnaire',
   name: 'patient-intake',
