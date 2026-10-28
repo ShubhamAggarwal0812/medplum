@@ -65,16 +65,30 @@ You can deploy this application by [clicking here](https://vercel.com/new/clone?
 
 By default, your locally running Foo Medical app is pointing to the hosted Medplum service. Foo Medical registers signups to a test project.
 
-To send patients to your own organization you will need to [register a new Project on Medplum](https://www.medplum.com/docs/tutorials/register) and configure the values in `.env` to point to your own project.
+To send patients to your own organization, use your own Medplum project: [register a new Project on Medplum](https://www.medplum.com/docs/tutorials/register), or create one on your own server, such as one [running locally](https://www.medplum.com/docs/contributing/run-the-stack). Then sign in to the Medplum app as a project admin and:
 
-If you are using the Medplum Hosted service, you can login to your Medplum Instance and add the following identifiers to your [Project Site Settings](https://app.medplum.com/admin/sites)
+1. Open the [Batch](https://app.medplum.com/batch) page and upload `data/core/patient-access-policy.json`. It creates the "Foo Medical Patient Access Policy", which limits each patient to their own records and lets them read the practitioners, schedules and value sets the app uses. Uploading the file again applies your changes to it.
+2. Open your Project, and on the Edit tab set "Default Patient Access Policy" to "Foo Medical Patient Access Policy". This turns on [open patient registration](https://www.medplum.com/docs/user-management/open-patient-registration), and every patient who signs up gets this policy.
+3. Optionally, upload `data/example/scheduling.json` on the Batch page, to add a practitioner patients can book with and message (see [Scheduling](#scheduling)).
+
+The policy lets patients create `Slot` resources, because `$hold` creates them as the signed-in patient when they book. Review that before you go to production.
+
+Then point the app at your project in `.env`, which the app copies from `.env.defaults` the first time it runs:
+
+```bash
+MEDPLUM_BASE_URL=http://localhost:8103/ # Or https://api.medplum.com/ for the hosted service
+MEDPLUM_PROJECT_ID=<your project ID>
+RECAPTCHA_SITE_KEY=6LfHdsYdAAAAAC0uLnnRrDrhcXnziiUwKd8VtLNq
+```
+
+That `RECAPTCHA_SITE_KEY` is the local server's default `recaptchaSiteKey` (in `packages/server/medplum.config.json`). If you are using the Medplum Hosted service, you can login to your Medplum Instance and add the following identifiers to your [Project Site Settings](https://app.medplum.com/admin/sites), and use that Recaptcha Site Key in `.env`:
 
 - Google Client Id
 - Google Client Secret
 - Recaptcha Site Key
 - Recaptcha Secret Key
 
-Contact the medplum team ([support@medplum.com](mailto:support@medplum.com) or [Discord](https://discord.gg/medplum])) with any questions.
+Contact the medplum team ([support@medplum.com](mailto:support@medplum.com) or [Discord](https://discord.gg/medplum)) with any questions.
 
 ### Data Setup
 
@@ -84,70 +98,7 @@ When you log into Foo Medical a set of sample FHIR records is created on your be
 
 The "Get Care" page is configured to search for a single `Schedule` resource, and use the first `HealthcareService` found in `Schedule.serviceType` with the `"https://medplum.com/fhir/service-type-reference"` extension.
 
-To set it up, first create a `HealthcareService` with attributes like this:
-```
-{
-  "resourceType": "HealthcareService",
-  "name": "Office Visit",
-  "type": [
-    { "coding": [{ "code": "office-visit" }]}
-  ],
-  "availableTime": [
-    {
-      "daysOfWeek": ["mon", "tue", "wed", "thu", "fri"],
-      "availableStartTime": "09:00:00",
-      "availableEndTime": "17:00:00"
-    }
-  ],
-  "extension": [
-    {
-      "url": "https://medplum.com/fhir/StructureDefinition/SchedulingParameters",
-      "extension": [
-        {
-          "url": "duration",
-          "valueDuration": {
-            "value": 1,
-            "unit": "h"
-          }
-        }
-      ]
-    }
-  ]
-}
-
-```
-
-Next, create a Practitioner's schedule linked to that service, with configuration such as this:
-```
-{
-  "resourceType": "Schedule",
-  "actor": [
-    {
-      "reference": "Practitioner/<Practitioner ID here>",
-      "display": "My Practitioner"
-    }
-  ],
-  "serviceType": [
-    {
-      "coding": [
-        {
-          "code": "office-visit",
-          "display": "Office Visit"
-        }
-      ],
-      "extension": [
-        {
-          "url": "https://medplum.com/fhir/service-type-reference",
-          "valueReference": {
-            "reference": "HealthcareService/<Service ID here>",
-            "display": "Office Visit"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
+`data/example/scheduling.json` sets this up with a practitioner, Dr. Alice Smith, an "Office Visit" `HealthcareService` that books one hour visits on weekdays from 9:00 to 17:00, and a `Schedule` that links them. Upload it on the Medplum app's [Batch](https://app.medplum.com/batch) page, or use it as a template for your own. Scheduling needs a timezone, which the file sets on the practitioner.
 
 For more details, see [Defining Availability](https://www.medplum.com/docs/scheduling/defining-availability).
 
