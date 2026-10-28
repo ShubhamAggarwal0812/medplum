@@ -1,0 +1,137 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "request": {
+        "method": "PUT",
+        "url": "AccessPolicy?name=Foo Medical Patient Access Policy"
+      },
+      "resource": {
+        "resourceType": "AccessPolicy",
+        "name": "Foo Medical Patient Access Policy",
+        "compartment": {
+          "reference": "%patient"
+        },
+        "resource": [
+          {
+            "resourceType": "Patient",
+            "criteria": "Patient?_id=%patient.id"
+          },
+          {
+            "resourceType": "AllergyIntolerance",
+            "criteria": "AllergyIntolerance?_compartment=%patient"
+          },
+          {
+            "resourceType": "Appointment",
+            "criteria": "Appointment?_compartment=%patient"
+          },
+          {
+            "resourceType": "CarePlan",
+            "criteria": "CarePlan?_compartment=%patient"
+          },
+          {
+            "resourceType": "CareTeam",
+            "criteria": "CareTeam?_compartment=%patient"
+          },
+          {
+            "resourceType": "Communication",
+            "criteria": "Communication?sender=%patient"
+          },
+          {
+            "resourceType": "Communication",
+            "criteria": "Communication?recipient=%patient"
+          },
+          {
+            "resourceType": "Condition",
+            "criteria": "Condition?_compartment=%patient"
+          },
+          {
+            "resourceType": "Coverage",
+            "criteria": "Coverage?_compartment=%patient"
+          },
+          {
+            "resourceType": "DiagnosticReport",
+            "criteria": "DiagnosticReport?_compartment=%patient"
+          },
+          {
+            "resourceType": "DocumentReference",
+            "criteria": "DocumentReference?_compartment=%patient"
+          },
+          {
+            "resourceType": "Encounter",
+            "criteria": "Encounter?_compartment=%patient"
+          },
+          {
+            "resourceType": "Goal",
+            "criteria": "Goal?_compartment=%patient"
+          },
+          {
+            "resourceType": "Immunization",
+            "criteria": "Immunization?_compartment=%patient"
+          },
+          {
+            "resourceType": "MedicationRequest",
+            "criteria": "MedicationRequest?_compartment=%patient"
+          },
+          {
+            "resourceType": "MedicationStatement",
+            "criteria": "MedicationStatement?_compartment=%patient"
+          },
+          {
+            "resourceType": "Observation",
+            "criteria": "Observation?_compartment=%patient"
+          },
+          {
+            "resourceType": "Procedure",
+            "criteria": "Procedure?_compartment=%patient"
+          },
+          {
+            "resourceType": "QuestionnaireResponse",
+            "criteria": "QuestionnaireResponse?_compartment=%patient"
+          },
+          {
+            "resourceType": "RelatedPerson",
+            "criteria": "RelatedPerson?_compartment=%patient"
+          },
+          {
+            "resourceType": "ServiceRequest",
+            "criteria": "ServiceRequest?_compartment=%patient"
+          },
+          {
+            "resourceType": "Task",
+            "criteria": "Task?_compartment=%patient"
+          },
+          {
+            "resourceType": "Subscription",
+            "criteria": "Subscription?type=websocket&author=%patient"
+          },
+          {
+            "resourceType": "Practitioner",
+            "interaction": ["read", "search"]
+          },
+          {
+            "resourceType": "Schedule",
+            "interaction": ["read", "search"]
+          },
+          {
+            "resourceType": "HealthcareService",
+            "interaction": ["read", "search"]
+          },
+          {
+            "resourceType": "Slot",
+            "interaction": ["create", "read", "search"]
+          },
+          {
+            "resourceType": "ValueSet",
+            "interaction": ["read", "search"]
+          },
+          {
+            "resourceType": "CodeSystem",
+            "interaction": ["read", "search"]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:5a1c7f0e-2b6d-4e8a-9c3f-1d2e3f4a5b01",
+      "request": {
+        "method": "POST",
+        "url": "Practitioner",
+        "ifNoneExist": "identifier=https://medplum.com/foomedical/sample-data|dr-alice-smith"
+      },
+      "resource": {
+        "resourceType": "Practitioner",
+        "identifier": [
+          {
+            "system": "https://medplum.com/foomedical/sample-data",
+            "value": "dr-alice-smith"
+          }
+        ],
+        "name": [
+          {
+            "prefix": ["Dr."],
+            "given": ["Alice"],
+            "family": "Smith"
+          }
+        ],
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/timezone",
+            "valueCode": "America/New_York"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5a1c7f0e-2b6d-4e8a-9c3f-1d2e3f4a5b02",
+      "request": {
+        "method": "POST",
+        "url": "HealthcareService",
+        "ifNoneExist": "identifier=https://medplum.com/foomedical/sample-data|office-visit"
+      },
+      "resource": {
+        "resourceType": "HealthcareService",
+        "identifier": [
+          {
+            "system": "https://medplum.com/foomedical/sample-data",
+            "value": "office-visit"
+          }
+        ],
+        "name": "Office Visit",
+        "type": [
+          {
+            "coding": [
+              {
+                "code": "office-visit",
+                "display": "Office Visit"
+              }
+            ]
+          }
+        ],
+        "availableTime": [
+          {
+            "daysOfWeek": ["mon", "tue", "wed", "thu", "fri"],
+            "availableStartTime": "09:00:00",
+            "availableEndTime": "17:00:00"
+          }
+        ],
+        "extension": [
+          {
+            "url": "https://medplum.com/fhir/StructureDefinition/SchedulingParameters",
+            "extension": [
+              {
+                "url": "duration",
+                "valueDuration": {
+                  "value": 1,
+                  "unit": "h"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5a1c7f0e-2b6d-4e8a-9c3f-1d2e3f4a5b03",
+      "request": {
+        "method": "POST",
+        "url": "Schedule",
+        "ifNoneExist": "identifier=https://medplum.com/foomedical/sample-data|dr-alice-smith-office-visit"
+      },
+      "resource": {
+        "resourceType": "Schedule",
+        "identifier": [
+          {
+            "system": "https://medplum.com/foomedical/sample-data",
+            "value": "dr-alice-smith-office-visit"
+          }
+        ],
+        "actor": [
+          {
+            "reference": "urn:uuid:5a1c7f0e-2b6d-4e8a-9c3f-1d2e3f4a5b01",
+            "display": "Dr. Alice Smith"
+          }
+        ],
+        "serviceType": [
+          {
+            "coding": [
+              {
+                "code": "office-visit",
+                "display": "Office Visit"
+              }
+            ],
+            "extension": [
+              {
+                "url": "https://medplum.com/fhir/service-type-reference",
+                "valueReference": {
+                  "reference": "urn:uuid:5a1c7f0e-2b6d-4e8a-9c3f-1d2e3f4a5b02",
+                  "display": "Office Visit"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
