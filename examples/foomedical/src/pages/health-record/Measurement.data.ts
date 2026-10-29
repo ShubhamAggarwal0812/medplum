@@ -28,18 +28,18 @@ export const measurementsMeta: Record<string, ObservationType> = {
       'Your blood pressure is the pressure exerted on the walls of your blood vessels. When this pressure is high, it can damage your blood vessels and increase your risk for a heart attack or stroke. We measure your blood pressure periodically to make sure it is not staying high. Hypertention is a condition that refers to consistantly high blood pressure.',
     chartDatasets: [
       {
-        label: 'Diastolic',
-        code: '8462-4',
-        unit: 'mm[Hg]',
-        backgroundColor: secondBackgroundColor,
-        borderColor: secondBorderColor,
-      },
-      {
         label: 'Systolic',
         code: '8480-6',
         unit: 'mm[Hg]',
         backgroundColor,
         borderColor,
+      },
+      {
+        label: 'Diastolic',
+        code: '8462-4',
+        unit: 'mm[Hg]',
+        backgroundColor: secondBackgroundColor,
+        borderColor: secondBorderColor,
       },
     ],
   },

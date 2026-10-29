@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Alert, Box, Button, Group, Modal, NumberInput, Stack, Table, Title } from '@mantine/core';
 import { createReference, formatDate, formatDateTime, formatObservationValue, getReferenceString } from '@medplum/core';
-import type { Observation, ObservationComponent, Patient } from '@medplum/fhirtypes';
+import type { Observation, Patient } from '@medplum/fhirtypes';
 import { Document, Form, useMedplum } from '@medplum/react';
 import { IconAlertCircle } from '@tabler/icons-react';
 import type { ChartData, ChartDataset } from 'chart.js';
@@ -34,7 +34,10 @@ export function Measurement(): JSX.Element | null {
           datasets[0].data.push(obs.valueQuantity?.value as number);
         } else {
           for (let i = 0; i < chartDatasets.length; i++) {
-            datasets[i].data.push((obs.component as ObservationComponent[])[i].valueQuantity?.value as number);
+            const component = obs.component?.find((c) =>
+              c.code?.coding?.some((coding) => coding.code === chartDatasets[i].code)
+            );
+            datasets[i].data.push(component?.valueQuantity?.value as number);
           }
         }
       }
@@ -50,6 +53,17 @@ export function Measurement(): JSX.Element | null {
       status: 'preliminary',
       subject: createReference(patient),
       effectiveDateTime: new Date().toISOString(),
+      category: [
+        {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+              code: 'vital-signs',
+              display: 'Vital Signs',
+            },
+          ],
+        },
+      ],
       code: {
         coding: [
           {
@@ -74,8 +88,7 @@ export function Measurement(): JSX.Element | null {
         code: {
           coding: [
             {
-              code: '8462-4',
-              display: 'Diastolic Blood Pressure',
+              code: item.code,
               system: 'http://loinc.org',
             },
           ],
