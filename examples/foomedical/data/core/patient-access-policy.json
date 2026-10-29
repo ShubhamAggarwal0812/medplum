@@ -71,6 +71,11 @@
             "criteria": "Immunization?_compartment=%patient"
           },
           {
+            "resourceType": "Invoice",
+            "criteria": "Invoice?_compartment=%patient",
+            "interaction": ["read", "search"]
+          },
+          {
             "resourceType": "MedicationRequest",
             "criteria": "MedicationRequest?_compartment=%patient"
           },

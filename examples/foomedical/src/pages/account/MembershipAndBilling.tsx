@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: Copyright Orangebot, Inc. and Medplum contributors
 // SPDX-License-Identifier: Apache-2.0
 import { Box, Stack, Table, Title } from '@mantine/core';
-import { formatCoding, getReferenceString } from '@medplum/core';
-import type { Coverage, Patient } from '@medplum/fhirtypes';
+import { formatCoding, formatDate, formatMoney, getReferenceString } from '@medplum/core';
+import type { Coverage, Invoice, Patient } from '@medplum/fhirtypes';
 import { useMedplum } from '@medplum/react';
 import type { JSX } from 'react';
-import { InfoButton } from '../../components/InfoButton';
 import { InfoSection } from '../../components/InfoSection';
 
 function CoverageTable({ coverages }: { coverages: Coverage[] }): JSX.Element {
@@ -31,6 +30,29 @@ function CoverageTable({ coverages }: { coverages: Coverage[] }): JSX.Element {
   );
 }
 
+function InvoiceTable({ invoices }: { invoices: Invoice[] }): JSX.Element {
+  return (
+    <Table>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Date</Table.Th>
+          <Table.Th>Amount</Table.Th>
+          <Table.Th>Status</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {invoices.map((i) => (
+          <Table.Tr key={i.id}>
+            <Table.Td>{formatDate(i.date) || '-'}</Table.Td>
+            <Table.Td>{formatMoney(i.totalGross ?? i.totalNet) || '-'}</Table.Td>
+            <Table.Td>{i.status === 'balanced' ? 'Paid' : 'Due'}</Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
+  );
+}
+
 export function MembershipAndBilling(): JSX.Element {
   const medplum = useMedplum();
   const patient = medplum.getProfile() as Patient;
@@ -39,7 +61,14 @@ export function MembershipAndBilling(): JSX.Element {
       beneficiary: getReferenceString(patient),
     })
     .read();
-  const payments = medplum.searchResources('PaymentNotice').read();
+  // PaymentNotice is payer-to-provider and outside the patient compartment; a patient's bills are Invoices
+  const invoices = medplum
+    .searchResources('Invoice', {
+      subject: getReferenceString(patient),
+      status: 'issued,balanced',
+      _sort: '-date',
+    })
+    .read();
 
   return (
     <Box p="xl">
@@ -53,14 +82,12 @@ export function MembershipAndBilling(): JSX.Element {
           </Stack>
         )}
       </InfoSection>
-      <InfoSection title="Payments">
-        {payments.length === 0 ? (
-          <Box p="xl">No payments</Box>
+      <InfoSection title="Invoices">
+        {invoices.length === 0 ? (
+          <Box p="xl">No invoices</Box>
         ) : (
           <Stack gap={0}>
-            {payments.map((p) => (
-              <InfoButton key={p.id}>{p.id}</InfoButton>
-            ))}
+            <InvoiceTable invoices={invoices} />
           </Stack>
         )}
       </InfoSection>
