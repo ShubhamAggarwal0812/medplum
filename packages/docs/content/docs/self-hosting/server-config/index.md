@@ -288,6 +288,12 @@ Optional flag whether new user registration is enabled. When `false`, the server
 
 **Default:** `true`
 
+### newProjectRegistrationEnabled
+
+Optional flag whether users can create new projects. When `false`, the server rejects new project creation (`/auth/newproject`) with "New project registration is disabled". Unlike `registerEnabled`, it does not block new user registration (`/auth/newuser`), so users can still create an account and be invited to existing projects.
+
+**Default:** `true`
+
 ### mfaAuthenticatorWindow
 
 Optional TOTP authenticator window for MFA token validation. This controls how many time steps (each 30 seconds) are accepted before and after the current time. A higher value is more lenient but less secure.
