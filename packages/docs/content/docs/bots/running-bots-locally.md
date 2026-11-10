@@ -5,12 +5,12 @@ title: Running Bots Locally
 
 To set up the Medplum [`Bot`](/docs/api/fhir/medplum/bot) framework locally, Medplum offers VM Context [`Bots`](/docs/api/fhir/medplum/bot). VM Context allows bots to spin up a local thread inside your server, rather than using an isolated lambda.
 
-Before enabling VM Context [Bots](/docs/api/fhir/medplum/bot), you must first enable bots on your project. To do so, follow thse steps:
+Before enabling VM Context [Bots](/docs/api/fhir/medplum/bot), you must first enable bots on your project. To do so, follow these steps:
 
 1. Log in to your [Super Admin Project](/docs/self-hosting/super-admin-guide).
 2. Access your [Project](/docs/api/fhir/medplum/project) resource.
 3. Go to the `Edit` tab.
-4. In the `Features` section, add the `bot` feature.
+4. In the `Features` section, add the `bots` feature.
 
 {{< note >}}
 The `defaultProjectFeatures` server config setting is used for default features when your project is being set up. Editing this config setting will not update your project to enable bots.
