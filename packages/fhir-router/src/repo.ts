@@ -690,9 +690,16 @@ export class MemoryRepository extends FhirRepository {
       search: { mode: 'match' },
       resource: deepClone(resource),
     }));
-    for (const sortRule of searchRequest.sortRules ?? EMPTY) {
-      entry = entry.sort((a, b) => sortComparator(a.resource as T, b.resource as T, sortRule));
-    }
+    const sortRules = searchRequest.sortRules ?? EMPTY;
+    entry = entry.sort((a, b) => {
+      for (const sortRule of sortRules) {
+        const result = sortComparator(a.resource as T, b.resource as T, sortRule);
+        if (result !== 0) {
+          return result;
+        }
+      }
+      return 0;
+    });
     if (searchRequest.offset !== undefined) {
       entry = entry.slice(searchRequest.offset);
     }

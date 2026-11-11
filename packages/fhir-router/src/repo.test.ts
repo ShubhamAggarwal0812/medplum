@@ -163,6 +163,34 @@ describe('MemoryRepository', () => {
     expect(bundle.entry).toBeDefined();
   });
 
+  test('Sort by multiple rules', async () => {
+    const family = randomUUID();
+    await repo.createResource<Patient>({
+      resourceType: 'Patient',
+      id: family + '-a',
+      name: [{ family }],
+      birthDate: '2000-01-01',
+    });
+    await repo.createResource<Patient>({
+      resourceType: 'Patient',
+      id: family + '-c',
+      name: [{ family }],
+      birthDate: '2010-01-01',
+    });
+    await repo.createResource<Patient>({
+      resourceType: 'Patient',
+      id: family + '-b',
+      name: [{ family }],
+      birthDate: '2010-01-01',
+    });
+
+    // The first rule decides the order; later rules only break ties, as in the server's ORDER BY
+    const patients = await repo.searchResources<Patient>(
+      parseSearchRequest(`Patient?family=${family}&_sort=-birthdate,_id`)
+    );
+    expect(patients.map((p) => p.id)).toStrictEqual([family + '-b', family + '-c', family + '-a']);
+  });
+
   test('clears all resources', async () => {
     repo.clear();
 
