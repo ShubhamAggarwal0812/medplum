@@ -26,11 +26,13 @@ import type { AwsClientStub } from 'aws-sdk-client-mock';
 import { mockClient } from 'aws-sdk-client-mock';
 import { randomUUID } from 'crypto';
 import express from 'express';
+import { pwnedPassword } from 'hibp';
 import { simpleParser } from 'mailparser';
 import { authenticator } from 'otplib';
 import type { Pool } from 'pg';
 import { Readable } from 'stream';
 import request from 'supertest';
+import type { Mock } from 'vitest';
 import { vi } from 'vitest';
 import { initApp, shutdownApp } from '../app';
 import { registerNew } from '../auth/register';
@@ -131,6 +133,37 @@ describe('Admin Invite', () => {
     const rows = await new SelectQuery('User').column('content').where('email', '=', bobEmail).execute(globalPool);
     const user = JSON.parse(rows[0].content) as User;
     expect(user.meta?.project).toStrictEqual(undefined);
+  });
+
+  test('Breached password', async () => {
+    const { project, accessToken } = await withTestContext(() =>
+      registerNew({
+        firstName: 'Alice',
+        lastName: 'Smith',
+        projectName: 'Alice Project',
+        email: `alice${randomUUID()}@example.com`,
+        password: 'password!@#',
+      })
+    );
+
+    (pwnedPassword as unknown as Mock).mockResolvedValueOnce(1);
+
+    const bobEmail = `bob${randomUUID()}@example.com`;
+    const res = await request(app)
+      .post('/admin/projects/' + project.id + '/invite')
+      .set('Authorization', 'Bearer ' + accessToken)
+      .send({
+        resourceType: 'Practitioner',
+        firstName: 'Bob',
+        lastName: 'Jones',
+        email: bobEmail,
+        password: 'password123',
+      });
+
+    expect(res).toHaveStatus(400);
+    expect(res.body.issue[0].details.text).toBe('Password found in breach database');
+    const rows = await new SelectQuery('User').column('id').where('email', '=', bobEmail).execute(globalPool);
+    expect(rows).toHaveLength(0);
   });
 
   test('Existing user to project', async () => {
