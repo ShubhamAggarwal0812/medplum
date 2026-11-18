@@ -13,6 +13,9 @@ stored in Medplum can be displayed without a gateway or a separate image server 
 Medplum's hosted cloud is preconfigured with an OHIF instance at
 **[viewer.medplum.com](https://viewer.medplum.com)**. There is nothing to deploy and nothing to
 configure — sign in with your Medplum account and the studies in your project are there.
+The viewer signs in through a server-level OAuth client, so only
+[server-scoped users](/docs/user-management/project-vs-server-scoped-users) can sign in to it. Project-scoped
+users, which include patients by default and practitioners invited as **Project Scoped**, can't.
 
 ![An MR brain study stored in Medplum, displayed in the OHIF Viewer at viewer.medplum.com](/img/blog/2026-08-dicom-ohif-viewer.webp)
 
